@@ -7,13 +7,14 @@ import pandas as pd
 
 # des = """
 # ------------------------------------------------------------------------------------------
-# Import Fish Results into Ambient Water Monitoring Data Exchange water quality database (awqX)
-# Mary Becker - Last Updated 2021-11-30
+# Import High Frequency Temperature Data into
+# Ambient Water Monitoring Data Exchange water quality database (awqX)
+# Mary Becker - Last Updated 2022-01-15
 # ------------------------------------------------------------------------------------------
-# Given input directory of excel template spreadsheets with new fish results data,
+# Given input directory of csv template spreadsheets with new temperature results data,
 # automatically checks for constraints with the database schema and produces an
 # error report for tuples that do not meet the constraints.  Tuples that do meet
-# requirements are inserted into the Fish Results table """
+# requirements are inserted into the temperature table """
 #
 # parser = argparse.ArgumentParser(description=des.lstrip(" "), formatter_class=argparse.RawTextHelpFormatter)
 # parser.add_argument('-i', '--in_dir', type=str, help='input directory of ftp\t[None]')
@@ -39,9 +40,9 @@ import pandas as pd
 
 ###FOR TESTING#####################################
 
-in_dir = 'C:\\Users\\deepuser\\Documents\\testFTP\\'
-cf_dir = 'C:\\Users\\deepuser\\Documents\\cnf\\user.cnf.txt'
-db_scm = 'cont'
+in_dir = 'C:\\Users\\deepuser\\Documents\\testFTP\\'  #Input directory
+cf_dir = 'C:\\Users\\deepuser\\Documents\\cnf\\user.cnf.txt' #Config file directory
+db_scm = 'cont' #Specify DB Schema
 
 ###################################################
 # function to read in csv file
