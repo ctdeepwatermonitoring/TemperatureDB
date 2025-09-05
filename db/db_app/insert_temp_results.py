@@ -82,13 +82,16 @@ def read_Xlsx(file, errFile):
         errFile += [[file, 'Incorrect File Type']]
 
 def ck_time_format(time):
-    if time.endswith('AM'):
-        dt = datetime.strptime(time, '%m/%d/%y %I:%M:%S %p').strftime('%Y-%m-%d %H:%M:%S')
-    if time.count(':') == 1:
-        dt = datetime.strptime(time, '%m/%d/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
-    else:
-        dt = datetime.strptime(time, '%m/%d/%y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
-    return dt
+    try:
+        return datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        if time.endswith('AM'):
+            dt = datetime.strptime(time, '%m/%d/%y %I:%M:%S %p').strftime('%Y-%m-%d %H:%M:%S')
+        if time.count(':') == 1:
+            dt = datetime.strptime(time, '%m/%d/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            dt = datetime.strptime(time, '%m/%d/%y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+        return dt
 
 
 # get data from config file
