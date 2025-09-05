@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import argparse
 import pandas as pd
+import csv
 
 # des = """
 # ------------------------------------------------------------------------------------------
@@ -40,8 +41,8 @@ import pandas as pd
 
 ###FOR TESTING#####################################
 
-in_dir = 'C:\\Users\\deepuser\\Documents\\testFTP\\'  #Input directory
-cf_dir = 'C:\\Users\\deepuser\\Documents\\cnf\\user.cnf.txt' #Config file directory
+in_dir = '/home/deepuser/testFTP/'  #Input directory
+cf_dir = '/home/deepuser/cnf/user.cnf.txt' #Config file directory
 db_scm = 'cont' #Specify DB Schema
 
 ###################################################
@@ -49,19 +50,9 @@ db_scm = 'cont' #Specify DB Schema
 def read_file(file, errFile):
     if file.endswith(".csv"):
         try:
-            with open(file, 'r') as f:
-                # low memory slower than list comp
-                # raw,trash,temps = [],[],set([])
-                # for line in f:
-                #     row = [e.replace('"','') for e in line.rsplit(',')]
-                #     temps.add(row[2])
-                #     if len(row)!=7: trash += [row]
-                #     else:           raw   += [row]
-
-                s = f.read()
-                f.close()
-            raw = [[e.replace('"','') for e in line.rsplit(',')] for line in s.rsplit('\n')]  # chop up the text by the newline='\n and the delim
-            while raw[-1][0] == '' or raw[-1][0] is None: raw = raw[:-1]
+            with open(file, 'r', newline='', encoding='utf-8') as f:
+                reader = csv.reader(f)  # uses default delimiter=',' and quotechar='"'
+                raw = [row for row in reader if row]  # skip empty rows
             return raw
         except FileNotFoundError as e:
             print(e)
@@ -82,13 +73,16 @@ def read_Xlsx(file, errFile):
         errFile += [[file, 'Incorrect File Type']]
 
 def ck_time_format(time):
-    if time.endswith('AM'):
-        dt = datetime.strptime(time, '%m/%d/%y %I:%M:%S %p').strftime('%Y-%m-%d %H:%M:%S')
-    if time.count(':') == 1:
-        dt = datetime.strptime(time, '%m/%d/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
-    else:
-        dt = datetime.strptime(time, '%m/%d/%y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
-    return dt
+    try:
+        return datetime.strptime(time, '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        if time.endswith('AM'):
+            dt = datetime.strptime(time, '%m/%d/%y %I:%M:%S %p').strftime('%Y-%m-%d %H:%M:%S')
+        if time.count(':') == 1:
+            dt = datetime.strptime(time, '%m/%d/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            dt = datetime.strptime(time, '%m/%d/%y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+        return dt
 
 
 # get data from config file
@@ -103,18 +97,18 @@ config_pw = config[1][1]
 ftp = in_dir
 folder = 'Upload/'
 insert_type = 'Cont_Data/'
-fdir = glob.glob(ftp + '**/' + folder + insert_type + '**.csv')
+fdir = glob.glob(os.path.join(ftp, '**', folder, insert_type, '*.csv'), recursive=True)
 # fdir = glob.glob(ftp + '**/' + folder + insert_type + '**.xlsx')
 
-headerList = ['Date_Time','Temp','UOM','ProbeID','SID','Collector','ProbeType']
+headerList = ['Date_Time','Temp','UOM','ProbeID','SID','Collector','ProbeType','dataFlag','comment']
 
 # headerList = ['Date Time', 'Temp, °C', 'UOM', 'Probe ID', 'SID', 'Collector', 'Probe Type']
 
 
 SQLinsert = 'INSERT INTO ' + db_scm + '.temperature' \
-            '(mDateTime, temp, uom, probeID, staSeq, collector, probeType, fileName,' \
+            '(mDateTime, temp, uom, probeID, staSeq, collector, probeType, dataFlag, comment, fileName,' \
             'createDate, createUser, lastUpdateDate, lastUpdateUser) ' \
-            'VALUES (?,?,?,?,?,?,?,?,?,?,?,?);'
+            'VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
 SQLerrLog = 'INSERT INTO ' + db_scm + '.errlog VALUES (?,?,?,?,?,?,?);'
 
 print('found %s files to process: %s' % (len(fdir), fdir))
@@ -124,11 +118,11 @@ try:
         db_err = []
         print('processing file=%s' % file)
         uploadDate = datetime.today().strftime('%m%d%Y_%H%M%S_')
-        fpath_base = file.rsplit('\\', 3)[0]
+        fpath_base = os.path.dirname(os.path.dirname(file))
         fpath_in = file
-        fpath_err = fpath_base + '\\ErrRpts\\' + uploadDate + file.rsplit('\\')[-1] + 'QcRpt.txt'
-        fpath_out = fpath_base + '\\UploadedRpts\\Temperature\\' + uploadDate + file.rsplit('\\')[-1]
-        fpath_eout = fpath_base + '\\UploadedRpts\\Temperature\\Error\\' + file.rsplit('\\')[-1]
+        fpath_err = os.path.join(fpath_base, 'ErrRpts', uploadDate + os.path.basename(file) + 'QcRpt.txt')
+        fpath_out = os.path.join(fpath_base, 'UploadedRpts', 'Temperature', uploadDate + os.path.basename(file))
+        fpath_eout = os.path.join(fpath_base, 'UploadedRpts', 'Temperature', 'Error', os.path.basename(file))
         delim = '\t'
         raw = read_file(fpath_in, db_err)
         header = raw[0]  # could use to check header names in the excel file
@@ -144,8 +138,8 @@ try:
                             s_time = raw[i][0]
                             s_date = ck_time_format(s_time)
                             # p_type = 'HOBO'
-                            file_name = file.rsplit('\\')[-1]
-                            user_name = fpath_base.rsplit('\\')[-1]
+                            file_name = os.path.basename(file)
+                            user_name = os.path.basename(fpath_base)
                             V_insert = [s_date] + raw[i][1:] + [file_name] + \
                                        [insDate] + [user_name] + [insDate] + [user_name]
                             ins = dbo.query(SQLinsert, V_insert)
