@@ -145,7 +145,6 @@ class MYSQL:
             cursor.execute(sql.replace(self.delim,'%s'),tuple(v))
             if cursor.with_rows: res = cursor.fetchall()
             cursor.close()
-            self.conn.commit()
         except msc.errors.ProgrammingError as err1:
             print(err1.sqlstate)
             print('run_SQL_V():ER6.SQL_Malformed Error: {}'.format(err1))
@@ -167,3 +166,9 @@ class MYSQL:
             res['err5'] = str(err5)
             pass
         return res
+
+    def commit(self):
+        self.conn.commit()
+
+    def rollback(self):
+        self.conn.rollback()

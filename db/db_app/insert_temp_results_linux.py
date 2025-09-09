@@ -225,9 +225,11 @@ try:
                 if len(db_err) < 1:
                     s = 'All rows successfully inserted'
                     os.rename(fpath_in, fpath_out)
+                    dbo.commit()
                 else:
                     s = '\n'.join([delim.join(row) for row in db_err])
                     os.rename(fpath_in, fpath_eout)
+                    dbo.rollback()
 
                 with open(fpath_err, 'w') as f:
                     f.write(s)
