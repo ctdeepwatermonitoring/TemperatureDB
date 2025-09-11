@@ -99,7 +99,7 @@ try:
         raw = raw[1:]
 
         if raw is not None and header == headerList:
-            with msc.MYSQL('localhost', db_scm, 3306, config_uid, config_pw) as dbo:
+            #with msc.MYSQL('localhost', db_scm, 3306, config_uid, config_pw) as dbo:
                 insDate = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                 # Insert into the database line by line.  Append DB error if not caught by qc checks.
                 for i in range(len(raw)):
@@ -112,17 +112,17 @@ try:
                             user_name = os.path.basename(fpath_base)
                             V_insert = [s_date] + raw[i][1:] + [file_name] + \
                                        [insDate] + [user_name] + [insDate] + [user_name]
-                            ins = dbo.query(SQLinsert, V_insert)
-                            if ins != {}:
+                            #ins = dbo.query(SQLinsert, V_insert)
+                            '''if ins != {}:
                                 print('error with file %s on row %s, err=%s' % (file, i, ins[sorted(ins)[0]]))
                                 # SQL insert
                                 err = [folder[0:-1], insert_type[0:-1], str(file), insDate, i, ins[sorted(ins)[0]],
                                        user_name]
-                                dbErr = dbo.query(SQLerrLog, err)
+                                #dbErr = dbo.query(SQLerrLog, err)
                                 table_row = delim.join([str(e) for e in raw[i]])
                                 db_err += [[str(file), str(i + 2), ins[sorted(ins)[0]], table_row]]
-                            else:
-                                print('success with file %s on row %s' % (file, i))
+                            else:'''
+                            print('success with file %s on row %s' % (file, i))#indent again here
                         except ValueError:
                             try:
                                 s_date = datetime.strptime(raw[i][0], '%m/%d/%y %H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
@@ -131,24 +131,24 @@ try:
                                 user_name = fpath_base.rsplit('\\')[-1]
                                 V_insert = [s_date] + raw[i][1:] + [file_name] + \
                                            [insDate] + [user_name] + [insDate] + [user_name]
-                                ins = dbo.query(SQLinsert, V_insert)
-                                if ins != {}:
+                                #ins = dbo.query(SQLinsert, V_insert)
+                                '''if ins != {}:
                                     print('error with file %s on row %s, err=%s' % (file, i, ins[sorted(ins)[0]]))
                                     # SQL insert
                                     err = [folder[0:-1], insert_type[0:-1], str(file), insDate, i, ins[sorted(ins)[0]],
                                            user_name]
-                                    dbErr = dbo.query(SQLerrLog, err)
+                                    #dbErr = dbo.query(SQLerrLog, err)
                                     table_row = delim.join([str(e) for e in raw[i]])
                                     db_err += [[str(file), str(i + 2), ins[sorted(ins)[0]], table_row]]
-                                else:
-                                    print('success with file %s on row %s' % (file, i))
+                                else:'''
+                                print('success with file %s on row %s' % (file, i))#indent again here
                             except ValueError:
                                 print(file, 'incorrect date format')
                                 msg = 'Check date format in file %s row %s.' % (str(file), i + 2)
                                 db_err += [[msg]]
                                 err = [folder[0:-1], insert_type[0:-1], str(file), insDate, i, msg,
                                        user_name]
-                                dbErr = dbo.query(SQLerrLog, err)
+                                #dbErr = dbo.query(SQLerrLog, err)
                                 s = '\n'.join([delim.join(row) for row in db_err])
                                 with open(fpath_err, 'w') as f:
                                     f.write(s)
@@ -160,7 +160,7 @@ try:
                             user_name = fpath_base.rsplit('\\')[-1]
                             V_insert = [s_date] + raw[i][1:] + [file_name] + \
                                        [insDate] + [user_name] + [insDate] + [user_name]
-                            ins = dbo.query(SQLinsert, V_insert)
+                            '''ins = dbo.query(SQLinsert, V_insert)
                             if ins != {}:
                                 print('error with file %s on row %s, err=%s' % (file, i, ins[sorted(ins)[0]]))
                                 # SQL insert
@@ -169,15 +169,15 @@ try:
                                 dbErr = dbo.query(SQLerrLog, err)
                                 table_row = delim.join([str(e) for e in raw[i]])
                                 db_err += [[str(file), str(i + 2), ins[sorted(ins)[0]], table_row]]
-                            else:
-                                print('success with file %s on row %s' % (file, i))
+                            else:'''
+                            print('success with file %s on row %s' % (file, i)) #Indent again here
                         except ValueError:
                             print(file, 'incorrect date format')
                             msg = 'Check date format in file %s row %s.' % (file, i + 2)
                             db_err += [[msg]]
                             err = [folder[0:-1], insert_type[0:-1], str(file), insDate, i, msg,
                                    user_name]
-                            dbErr = dbo.query(SQLerrLog, err)
+                            #dbErr = dbo.query(SQLerrLog, err)
                             s = '\n'.join([delim.join(row) for row in db_err])
                             with open(fpath_err, 'w') as f:
                                 f.write(s)
@@ -195,11 +195,11 @@ try:
                 if len(db_err) < 1:
                     s = 'All rows successfully inserted'
                     os.rename(fpath_in, fpath_out)
-                    dbo.commit()
+                    #dbo.commit()
                 else:
                     s = '\n'.join([delim.join(row) for row in db_err])
                     os.rename(fpath_in, fpath_eout)
-                    dbo.rollback()
+                    #dbo.rollback()
 
                 with open(fpath_err, 'w') as f:
                     f.write(s)
