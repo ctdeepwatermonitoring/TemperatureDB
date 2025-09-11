@@ -4,7 +4,7 @@ import platform
 from datetime import datetime
 import os
 import argparse
-import pandas as pd
+#import pandas as pd
 import csv
 from pathlib import Path
 
