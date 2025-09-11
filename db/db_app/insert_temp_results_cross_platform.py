@@ -1,6 +1,6 @@
 import glob
 import platform
-from db import mysql_connector as msc
+#from db import mysql_connector as msc
 from datetime import datetime
 import os
 import argparse
