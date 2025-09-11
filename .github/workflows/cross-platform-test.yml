@@ -30,6 +30,9 @@ jobs:
 
       - name: Create fake testFTP folder
         run: |
+          mkdir -p cnf
+          echo "user,TowleA" > cnf/user.cnf.txt
+          echo "password,password" >> cnf/user.cnf.txt
           mkdir -p testFTP/Upload/Cont_Data
           mkdir -p testFTP/Upload/ErrRpts
           mkdir -p testFTP/Upload/UploadedRpts/Temperature/Error
