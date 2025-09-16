@@ -8,13 +8,8 @@ import pandas as pd
 import csv
 from pathlib import Path
 
-system = platform.system()
-if system == "Windows":
-    in_dir = Path("testFTP/")
-    cf_dir = Path("cnf/user.cnf.txt")
-else:
-    in_dir = Path("testFTP/")
-    cf_dir = Path("cnf/user.cnf.txt")
+in_dir = Path("testFTP/")
+cf_dir = Path("cnf/user.cnf.txt")
 
 db_scm = "cont"
 
