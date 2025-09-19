@@ -35,9 +35,9 @@ from pathlib import Path
 BASE_DIR = Path.home()
 CONT_DIR = BASE_DIR / "ContDataQC" / "historic_temperature_project"
 UPLOAD_DIR = BASE_DIR / "TemperatureDB" / "db" / "db_app"
-FIRST_R_SCRIPT = CONT_DIR / "csv_qc2.R"
-SECOND_R_SCRIPT = CONT_DIR / "migration_prep2.R"
-PYTHON_SCRIPT = UPLOAD_DIR / "insert_temp_results_cross_platform.py"
+QC_SCRIPT = CONT_DIR / "csv_qc2.R"
+UPLOAD_PREP_SCRIPT = CONT_DIR / "migration_prep2.R"
+UPLOAD_SCRIPT = UPLOAD_DIR / "insert_temp_results_cross_platform.py"
 
 def run_r_script(script_path):
     print(f"Running R script: {script_path}")
@@ -49,12 +49,14 @@ def run_python_script(script_path):
     subprocess.run([sys.executable, "-m", script_module], check=True)
 
 def main():
-    run_r_script(FIRST_R_SCRIPT)
+    run_qc = True #Set this to False if you don't want to do the qc
+    if run_qc:
+        run_r_script(QC_SCRIPT)
 
-    run_extra = True  # Set this to False if you don't want to run the other scripts yet
-    if run_extra:
-        run_r_script(SECOND_R_SCRIPT)
-        run_python_script(PYTHON_SCRIPT)
+    run_upload = True  # Set this to False if you don't want to upload to the database
+    if run_upload:
+        run_r_script(UPLOAD_PREP_SCRIPT)
+        run_python_script(UPLOAD_SCRIPT)
 
 if __name__ == "__main__":
     main()
