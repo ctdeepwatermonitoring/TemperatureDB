@@ -8,29 +8,32 @@ from pathlib import Path
 #password,YourPassword
 
 # File structure required for this program
-# ├── ContDataQC                                        #https://github.com/ctdeepwatermonitoring/water_temperature
-# │   └── historic_temperature_project
-# │       ├── csv_qc2.R
-# │       ├── migration_prep2.R
-# │       ├── config_deep2.R
-# │       ├── data_to_qc
-# │       ├── qced_data
-# │       ├── raw_data                                  #DEPLOYMENT CSVS GO HERE
-# │       └── migration_folder
-# └── TemperatureDB                                     #https://github.com/ctdeepwatermonitoring/TemperatureDB
-#     └── db
-#         ├── cnf
-#         │   └── user.cnf.txt
-#         ├── testFTP
-#         │   └── Upload
-#         │       ├── ContData
-#         │       ├── ErrRpts
-#         │       └── UploadedRpts
-#         │           └── Temperature
-#         │               └── Error
-#         └── db_app
-#             ├── driver.py
-#             └── insert_temp_results_cross_platform.py
+#home
+#├── ContDataQC                                        #https://github.com/ctdeepwatermonitoring/water_temperature
+#│   └── historic_temperature_project
+#│       ├── csv_qc2.R
+#│       ├── migration_prep2.R
+#│       ├── config_deep2.R
+#│       ├── data_to_qc
+#│       ├── qced_data
+#│       ├── raw_data                                  #DEPLOYMENT CSVS GO HERE
+#│       ├── error_files
+#│       │   └── error_log
+#│       └── migration_folder
+#└── TemperatureDB                                     #https://github.com/ctdeepwatermonitoring/TemperatureDB
+#    └── db
+#        ├── cnf
+#        │   └── user.cnf.txt
+#        ├── testFTP
+#        │   └── Upload
+#        │       ├── ContData
+#        │       ├── ErrRpts
+#        │       └── UploadedRpts
+#        │           └── Temperature
+#        │               └── Error
+#        └── db_app
+#            ├── driver.py
+#            └── insert_temp_results_cross_platform.py
 
 BASE_DIR = Path.home()
 CONT_DIR = BASE_DIR / "ContDataQC" / "historic_temperature_project"
@@ -49,7 +52,7 @@ def run_python_script(script_path):
     subprocess.run([sys.executable, "-m", script_module], check=True)
 
 def main():
-    run_qc = True #Set this to False if you don't want to do the qc
+    run_qc = True # Set this to False if you don't want to do the qc
     if run_qc:
         run_r_script(QC_SCRIPT)
 
